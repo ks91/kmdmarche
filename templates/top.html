@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+    <title>marche top</title>
+    <h1>ここたのマルシェへようこそ！</h1>
+    <!-- <p><a href="/pay">送金する</a></p>
+    <p><a href="/shopowner">出店する</a></p>
+    <p><a href="/tx">TX一覧</a></p>
+    <p><a href="/ownerlist">出店者一覧</a></p> -->
+
+    <h1>こんにちは。{{  name }}さん。</h1>
+<button type="button" class="btn btn-warning"　name="qr" onclick="location.href='/pay0'" value="bbb">
+<font size="3">QRcord</font>
+</button>
+<p>
+<p>
+<button type="button" class="btn btn-warning"　name="openashop" onclick="location.href='/shopowner'" value="ddd">
+<font size="3">open a shop</font>
+</button>
+<p>
+<button type="button" class="btn btn-warning"　name="TX" onclick="location.href='/tx'" value="eee">
+<font size="3">transaction</font>
+</button>
+<p>
+<button type="button" class="btn btn-warning"　name="shops" onclick="location.href='/ownerlist'" value="fff">
+<font size="3">shops</font>
+</button>
+
+{% endblock %}

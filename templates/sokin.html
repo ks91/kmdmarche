@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{menu_name}}</h1>
+    <p>{{ info }}</p>
+    <!-- <p><a href="/mypage">マイページはこちら！</a></p> -->
+    <!-- <button type="button" class="btn btn-warning"　name="mypage" onclick="location.href='/mypage'" value="fff"> -->
+    <!-- <font size="3">mypage</font> -->
+    <!-- </button> -->
+    <input type="text" name="money">
+    <input type="submit" onclick="location.href='/sokin_later'" class="btn btn-warning" value="送金">
+    <br>
+    <button type="button" class="btn btn-info"　name="back" onclick="location.href='/top'" value="sss">メニューに戻る</button>
+
+{% endblock %}

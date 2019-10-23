@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>ここたのマルシェへようこそ！</h1>
+    <!-- <p><a href="/toppage">マイページ</a></p>
+    <p><a href="/history">購入履歴</a></p> -->
+    <head>
+      <title>cocotano marche</title>
+    </head>
+<body>
+      <div>
+        <p><img src="/static/images/top.jpg" width="100%" alt="top-picture"></p>
+      </div>
+
+      <h2>ニックネームを入れてログインしてね</h2>
+      <p>The date and time on the server: {{ time }}</p>
+      <!-- <form action="{{ url_for('pay') }}" method="post">
+              <div>
+                  <label for="name">Nick-Name</label>
+                  <input type="text" name="code">
+              </div>
+              <input type="submit" class="btn btn-warning"　value="log in" >
+      </form> -->
+
+      <!-- <p>The date and time on the server: {{ time }}</p>
+      <form action="{{ url_for('pay') }}" method="post">
+          <input type="text" name="code">
+          <input type="submit"　class="btn btn-warning"　onclick="location.href='/top'">
+      </form> -->
+      <form action="/top" method="post">
+        <div>
+          <label for="name">Name: </label>
+            <p><input type="text" name="username" /></p>
+        </div>
+        <p><input type="submit" class="btn btn-warning" value="登録" /></p>
+      </form>
+
+
+</body>
+
+
+{% endblock %}
