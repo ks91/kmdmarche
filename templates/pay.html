@@ -1,32 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>{{menu_name}}</h1>
+<head>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+    <center><h1>{{menu_name}}</h1>
     <p>{{ info }}</p>
-    <title>QR Code</title>
+    <title>QR Code</title></center>
 <body>
-  <p>The date and time on the server: {{ time }}</p>
+  <center><p>The date and time on the server: {{ time }}</p><center>
 <form action="/pay" method="post">
   <p><input type="text" name="code" /><p>
   <p><input type="submit" class="btn btn-warning" value="発行する" /></p>
 </form>
 
-  <!-- <form action="{{ url_for('pay') }}" method="post">
-          <div>
-              <label for="name">Nick-Name</label>
-              <input type="text" name="code">
-          </div>
-          <input type="submit" class="btn btn-warning"　value="発行" >
-  </form> -->
-  <!--
-    <form action={{ url_for('event') }} method="post">
-          <input type="submit" name="submit" value="Retry">
-          <input type="submit" name="submit" value="Quit">
-      <br>
-          <h2>{{data}}</h2>
-          <h2>QR image</h2>
-          <img src="{{qr_b64data}}" alt="{{qr_name}}" > -->
-
-　　<button type="button" class="btn btn-info"　name="back" onclick="location.href='/top'" value="sss">メニューに戻る</button>
+<!-- <button type="button" class="btn btn-outline-secondary2" onclick="location.href='/top'" value="back">メニューに戻る</button> -->
+<button type="button" class="btn btn-info"　name="back" onclick="location.href='/top'" value="fff">
+<font size="3">メニューに戻る</font>
+</button>
 </body>
 
 {% endblock %}

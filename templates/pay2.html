@@ -1,24 +1,25 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>{{menu_name}}</h1>
-    <p>{{ info }}</p>
-    <!-- <p><a href="/mypage">マイページはこちら！</a></p> -->
-    <button type="button" class="btn btn-warning"　name="mypage" onclick="location.href='/mypage'" value="fff">
-    <font size="3">mypage</font>
-    </button>
-
+<head>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
 <body>
-      <form action="{{url_for('event')}}" method="get">
-            <input type="submit" name="submit" value="Retry">
-            <input type="submit" name="submit" value="Quit">
+    <center><font face="Comic Sans MS"><h1>{{menu_name}}</h1>
+    <p>{{ info }}</p></font></center>
+    <!-- <p><a href="/mypage">マイページはこちら！</a></p> -->
+
+
         <br>
             <!-- <h2>{{data}}</h2> -->
-            <h2>QR image</h2>
+            <center><font face="Comic Sans MS"><h2>Please show your QRcode to customer</h2>
+            <h1>>>>>></h1></font>
             <!-- <img src="{{filename}}" alt="{{filename}}" >
             <img  src="{{fig}}"> -->
             <img src="{{qr_b64data}}" alt="{{qr_name}}" >
-            <br>
-    <button type="button" class="btn btn-info"　name="back" onclick="location.href='/top'" value="sss">メニューに戻る</button>
+          <font face="Comic Sans MS">
+            <h1>>>>>></h1>
+    <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back" onclick="location.href='/top'" value="sss">Back to Menu</button></font></center>
+
 </body>
 
 

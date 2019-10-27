@@ -1,14 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>{{menu_name}}</h1>
-    <p>{{ info }}</p>
-    <!-- <p><a href="/mypage">マイページはこちら！</a></p> -->
-    <!-- <button type="button" class="btn btn-warning"　name="mypage" onclick="location.href='/mypage'" value="fff"> -->
-    <!-- <font size="3">mypage</font> -->
-    <!-- </button> -->
-    <input type="text" name="money">
-    <input type="submit" onclick="location.href='/sokin_later'" class="btn btn-warning" value="送金">
-    <br>
-    <button type="button" class="btn btn-info"　name="back" onclick="location.href='/top'" value="sss">メニューに戻る</button>
+<head>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+    <center><font face="Comic Sans MS"><h1>Transfer to {{who}} ?</h1>
+      <h1>>>>>></h1>
+    <form action="#" method="post">
+      <h1>Transfer Amount?</h1>
+        <h2><input type="text" name="a" list="coin" placeholder="select or input" autocomplete="off">
+        <datalist id="coin">
+            <option value="1">
+      　    <option value="2">
+      　    <option value="3">
+            <option value="4">
+            <option value="5">
+            <option value="6">
+        </datalist></h2>
+    </form>
+    <input type="submit" onclick="location.href='/sokin_later'" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px" value="Transfer">
+    <h1>>>>>></h1>
+    <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back" onclick="location.href='/top'" value="sss">Back to Menu</button>
+    </font></center>
+
 
 {% endblock %}

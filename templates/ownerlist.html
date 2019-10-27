@@ -1,8 +1,51 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>{{menu_name}}</h1>
+<head>
+  <link rel="stylesheet" href="/static/css/style2.css">
+</head>
+    <center>
+      <font face="Comic Sans MS"><h1>{{menu_name}}</h1>
     <p>{{ info }}</p>
+    <h1>>>>>></h1>
+  </font>
+</center>
 
-    <button type="button" class="btn btn-info"　name="back" onclick="location.href='/top'" value="sss">メニューに戻る</button>
-
+    <table width="100%" height="70%" cellspacing="5" cellpadding="10">
+      <tr align="center">
+      <th bgcolor="#eeb417"><font face="Comic Sans MS">Buyer</font></th>
+      <th bgcolor="#eeb417"><font face="Comic Sans MS">Time</font></th>
+      <th bgcolor="#eeb417"><font face="Comic Sans MS">Item</font></th>
+      </tr>
+      <tr align="center">
+      <td>のぞむ</td>
+      <td>{{time}}</td>
+      <td>コーヒー</td>
+      </tr>
+      <tr align="center">
+      <td>たかし</td>
+      <td>{{time}}</td>
+      <td>ピアノ演奏</td>
+      </tr>
+      <tr align="center">
+      <td>かなこ</td>
+      <td>{{time}}</td>
+      <td>タロット占い</td>
+      </tr>
+      <tr align="center">
+        <td>bob</td>
+        <td>{{time}}</td>
+        <td>面白い体験談</td>
+      </tr>
+      <tr align="center">
+        <td>キャサリン</td>
+        <td>{{time}}</td>
+        <td>ステッカー</td>
+      </tr>
+      </table>
+      <center>
+        <font face="Comic Sans MS">
+        <h1>>>>>></h1>
+    <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:440px;height:50px"　name="back" onclick="location.href='/top'" value="sss">Back to Menu</button>
+      </font>
+    </center>
 {% endblock %}
