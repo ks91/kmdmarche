@@ -1,24 +1,11 @@
 {% extends "kmdmarche/layout.html" %}
 {% block content %}
-<head>
-  <link rel="stylesheet" href="/kmdmarche/static/css/style.css">
-</head>
-    <!-- <p><a href="/toppage">マイページ</a></p>
-    <p><a href="/history">購入履歴</a></p> -->
-    <head>
-      <title>cocotano marche</title>
-    </head>
-<body>
-      <div>
-        <p><img src="/kmdmarche/static/images/top6.jpg" width="100%"  alt="top-picture"></p>
-      </div>
-
           <center><font face="Comic Sans MS"><h2>please enter your nick name!</h2>
           <h3>TIME: {{ time }}</h3>
           <h1>>>>>></h1></font></center>
-          <form action="/kmdmarche/top" method="post">
+          <form action="/kmdmarche/log-in" method="post">
             <div>
-              <center><font face="Comic Sans MS"><h3>Nick Name：<input type="text" name="username" /></h3></font></center>
+              <center><font face="Comic Sans MS"><h3>Nick Name：<input type="text" name="name" /></h3></font></center>
             </div>
 
             <center><font face="Comic Sans MS">
@@ -26,7 +13,4 @@
               <p><input type="submit" value="Log in" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px" /></p></font></center>
             <!-- <p><input type="submit" class="btn btn-warning" value="登録" /></p> -->
           </form>
-</body>
-
-
 {% endblock %}

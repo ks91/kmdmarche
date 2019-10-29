@@ -1,14 +1,11 @@
 {% extends "kmdmarche/layout.html" %}
 {% block content %}
-<head>
-  <link rel="stylesheet" href="/kmdmarche/static/css/style2.css">
-</head>
     <center>
       <font face="Comic Sans MS">
         <h1>{{menu_name}}<br>>>>>></h1>
         <p>{{ info }}</p>
     <!-- <p><a href="/mypage">マイページはこちら！</a></p> -->
-    <button type="button" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　name="mypage" onclick="location.href='/mypage'" value="fff">
+    <button type="button" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　name="mypage" onclick="location.href='/kmdmarche/mypage'" value="fff">
     <font size="3"face="Comic Sans MS">My Page</font>
     </button>
     <br>
@@ -84,7 +81,7 @@
     <center>
         <font face="Comic Sans MS">
           <h1>>>>>></h1>
-            <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back" onclick="location.href='/top'" value="sss">Back to Menu</button>
+            <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back" onclick="location.href='/kmdmarche/'" value="sss">Back to Menu</button>
         </font>
       </center>
     </body>

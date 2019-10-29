@@ -1,11 +1,8 @@
 {% extends "kmdmarche/layout.html" %}
 {% block content %}
-<head>
-  <link rel="stylesheet" href="/kmdmarche/static/css/style2.css">
-</head>
     <center><font face="Comic Sans MS"><h1>{{menu_name}}</h1>
     <h1>>>>>></h1>
-    <h2>Your balance : {{ info }}</h2>
+    <h2>Your balance : {{ balance }} {{symbol}}</h2>
     <h2>Money you paid {{ spendcoin }}</h2>
     <h2>Money you received {{ getcoin }}</h2>
     <h1>>>>>></h1>
@@ -87,7 +84,7 @@
 
       <font face="Comic Sans MS">
       <h1>>>>>></h1>
-      <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back" onclick="location.href='/top'" value="sss">Back to Menu</button></font></center>
+      <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back" onclick="location.href='/kmdmarche/'" value="sss">Back to Menu</button></font></center>
 
 
 {% endblock %}

@@ -1,10 +1,12 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for
-
-import datetime
-from PIL import Image
-import qrcode  as qr
 import base64
+import datetime
+import qrcode  as qr
+import requests
+
+from flask import Blueprint, render_template, request, session, redirect, url_for
 from io import BytesIO
+from PIL import Image
+
 
 # Prior to use this web application, please define a currency using API,
 # and put the mint_id here.
@@ -17,55 +19,139 @@ INIT_AMOUNT = '30'
 PREFIX_API = 'http://127.0.0.1:5000'
 
 
+def get_balance(name, user_id):
+    r = requests.get(PREFIX_API + '/api/status/' + user_id + \
+            '?mint_id=' + MINT_ID)
+    res = r.json()
+
+    if r.status_code != 200:
+        return render_template('kmdmarche/error.html',
+                message=res['error']['message'])
+
+    return render_template('kmdmarche/sokin.html', name=name, user_id=user_id,
+            balance=res['balance'], symbol=res['symbol'],
+            to_name=request.args.get('to_name'),
+            sending=request.method=='GET')
+
+
+def qrmaker(s):
+    qr_img = qr.make(s)
+
+    # allocate buffer and write the image there
+    buf = BytesIO()
+    qr_img.save(buf,format="png")
+
+    # encode the binary data into base64 and decode with UTF-8
+    qr_b64str = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+    # to embed it as src attribute of image element
+    qr_b64data = "data:image/png;base64,{}".format(qr_b64str)
+
+    return qr_b64data
+
+
 kmdmarche = Blueprint('kmdmarche', __name__, template_folder='templates',
         static_folder='./static')
 title_name="CocoTano Marche"
 
-@kmdmarche.route("/", methods=['POST','GET'])
-def login():
-    now = datetime.datetime.now()
-    # timeString = now.strftime("%Y-%m-%d %H:%M")
-    timeString = now.strftime("%H:%M")
 
-    return render_template("kmdmarche/login.html", title_name = title_name, time=timeString)
+@kmdmarche.route('/')
+@kmdmarche.route('/register', methods=['GET', 'POST'])
+def register():
+    if 'user_id' in session:
+        return render_template('kmdmarche/top.html', name=session['name'])
 
-# cocotano top
-@kmdmarche.route("/top", methods=['POST','GET'])
-def toppage():
-    name = request.form['username']
-    return render_template("kmdmarche/top.html", name = name)
+    if request.method == 'GET':
+        now = datetime.datetime.now()
+        timeString = now.strftime('%H:%M')
 
-@kmdmarche.route("/pay0")
-def pay0():
-    menu_name = ""
-    info = ""
-    now = datetime.datetime.now()
-    timeString = now.strftime("%Y-%m-%d %H:%M")
-    return render_template("kmdmarche/pay.html", menu_name = menu_name, time=timeString, info = info)
+        return render_template('kmdmarche/register.html',
+                title_name=title_name, time=timeString)
+
+    name = request.form.get('name')
+
+    if name is None or len(name) <= 0:
+        return render_template('kmdmarche/error.html',
+                message='name is missing')
+
+    r = requests.post(PREFIX_API + '/api/user', data={'name': name})
+    res = r.json()
+
+    if r.status_code != 201:
+        return render_template('kmdmarche/error.html',
+                message=res['error']['message'])
+
+    user_id = res['user_id']
+
+    session['name'] = name
+    session['user_id'] = user_id
+
+    r = requests.post(PREFIX_API + '/api/issue/' + MINT_ID,
+            data={'user_id': user_id, 'amount': INIT_AMOUNT})
+
+    if r.status_code != 200:
+        return render_template('kmdmarche/error.html',
+                message=res['error']['message'])
+
+    return render_template('kmdmarche/top.html', name=name)
+
+
+@kmdmarche.route('/log-in', methods=['GET', 'POST'])
+def log_in():
+    if request.method == 'GET':
+        return render_template('kmdmarche/login.html')
+
+    name = request.form.get('name')
+
+    if name is None or len(name) <= 0:
+        return render_template('kmdmarche/error.html',
+                message='name is missing')
+
+    r = requests.get(PREFIX_API + '/api/user' + '?name=' + name)
+    res = r.json()
+
+    if r.status_code != 200:
+        return render_template('kmdmarche/error.html',
+                message=res['error']['message'])
+
+    session['name'] = name
+    session['user_id'] = res['user_id']
+
+    return render_template('kmdmarche/top.html', name=name)
+
+
+@kmdmarche.route('/log-out')
+def log_out():
+    session.pop('user_id', None)
+    session.pop('name', None)
+
+    return render_template('kmdmarche/register.html')
+
 
 # payment
 @kmdmarche.route("/pay", methods=['POST','GET'])
 def pay():
+    if 'user_id' not in session:
+        now = datetime.datetime.now()
+        timeString = now.strftime('%H:%M')
+
+        return render_template('kmdmarche/register.html',
+                title_name=title_name, time=timeString)
+
+    name = session['name']
+
     menu_name = "Cocotano Marche"
     info = ""
-    code_input = request.form['code']
-    # code_input = "hogehogehoge"
-    qr_b64data = qrmaker(str(code_input))
+    s_url = PREFIX_API + '/kmdmarche/sokin?to_name=' + name
+    qr_b64data = qrmaker(s_url)
     ts = datetime.datetime.now()
-    qr_name = "qrcode_image_{}".format(ts.strftime("%Y-%m-%d_%H-%M-%S"))
-    return render_template("kmdmarche/pay2.html",
-        data=code_input,
+    return render_template('kmdmarche/pay2.html',
         qr_b64data=qr_b64data,
-        qr_name=qr_name,
+        qr_name=s_url,
         menu_name=menu_name,
         info=info
     )
-    # code_input = request.form['code']
-    # fig_url = QRmaker(code_input)
-    # qr_img = qr.make(str('aaaaa'))
-    # qr_img.show()
 
-    # return render_template("kmdmarche/pay2.html", data=code_input,fig=fig_url)
 
 # retry and quit
 @kmdmarche.route('/event', methods=['GET'] )
@@ -80,27 +166,54 @@ def event():
     elif request.method == 'POST':
         return redirect(url_for('pay0'))
 
-def qrmaker(code):
-    qr_img = qr.make(str(code))
 
-    # allocate buffer and write the image there
-    buf = BytesIO()
-    qr_img.save(buf,format="png")
-
-    # encode the binary data into base64 and decode with UTF-8
-    qr_b64str = base64.b64encode(buf.getvalue()).decode("utf-8")
-
-    # to embed it as src attribute of image element
-    qr_b64data = "data:image/png;base64,{}".format(qr_b64str)
-
-    return qr_b64data
-
-@kmdmarche.route("/sokin")
+@kmdmarche.route('/sokin', methods=['GET', 'POST'])
 def sokin():
-    who = "BOB"
-    info = "Enter the amount to transfer"
+    if 'user_id' not in session:
+        now = datetime.datetime.now()
+        timeString = now.strftime('%H:%M')
 
-    return render_template("kmdmarche/sokin.html", who = who, title_name = title_name, info = info)
+        return render_template('kmdmarche/register.html',
+                title_name=title_name, time=timeString)
+
+    name = session['name']
+    user_id = session['user_id']
+
+    if request.method == 'GET':
+        return get_balance(name, user_id)
+
+    to_name = request.form.get('to_name')
+    amount = request.form.get('amount')
+
+    if to_name is None or len(to_name) <= 0:
+        return render_template('kmdmarche/error.html',
+                message='to_name is missing')
+
+    if amount is None or len(amount) <= 0:
+        return render_template('kmdmarche/error.html',
+                message='amount is missing')
+
+    r = requests.get(PREFIX_API + '/api/user' + '?name=' + to_name)
+    res = r.json()
+
+    if r.status_code != 200:
+        return render_template('kmdmarche/error.html',
+                message=res['error']['message'])
+
+    to_user_id = res['user_id']
+
+    r = requests.post(PREFIX_API + '/api/transfer/' + MINT_ID, data={
+        'from_user_id': user_id,
+        'to_user_id': to_user_id,
+        'amount': amount
+    })
+
+    if r.status_code != 200:
+        return render_template('kmdmarche/error.html',
+                message=res['error']['message'])
+
+    return get_balance(name, user_id)
+
 
 @kmdmarche.route("/sokin_later")
 def sokin_later():
@@ -116,10 +229,12 @@ def shopowner():
     timeString = now.strftime("%H:%M")
     return render_template("kmdmarche/shopowner.html", menu_name = menu_name, title_name = title_name, info = info, time=timeString)
 
+
 @kmdmarche.route("/shopowener_later")
 def shopowner_later():
 
     return render_template("kmdmarche/shopowner_later.html")
+
 
 # TX
 @kmdmarche.route("/tx")
@@ -130,6 +245,7 @@ def tx():
     timeString = now.strftime("%H:%M")
     return render_template("kmdmarche/tx.html", menu_name = menu_name, title_name = title_name, info = info, time=timeString)
 
+
 # list of shops
 @kmdmarche.route("/ownerlist")
 def ownerlist():
@@ -139,14 +255,33 @@ def ownerlist():
     timeString = now.strftime("%H:%M")
     return render_template("kmdmarche/ownerlist.html", menu_name = menu_name, title_name = title_name, info = info, time=timeString)
 
-@kmdmarche.route("/mypage")
+
+@kmdmarche.route('/mypage')
 def mypage():
+    if 'user_id' not in session:
+        now = datetime.datetime.now()
+        timeString = now.strftime('%H:%M')
+
+        return render_template('kmdmarche/register.html',
+                title_name=title_name, time=timeString)
+
+    name = session['name']
+    user_id = session['user_id']
+
+    r = requests.get(PREFIX_API + '/api/status/' + user_id + \
+            '?mint_id=' + MINT_ID)
+    res = r.json()
+
+    if r.status_code != 200:
+        return render_template('kmdmarche/error.html',
+                message=res['error']['message'])
+
     menu_name = "My Page"
-    info = "24"
-    spendcoin = "56"
-    getcoin = "9"
     now = datetime.datetime.now()
     timeString = now.strftime("%H:%M")
-    return render_template("kmdmarche/mypage.html", menu_name = menu_name, title_name = title_name, info = info, time=timeString, spendcoin = spendcoin, getcoin = getcoin)
+    return render_template("kmdmarche/mypage.html", menu_name="",
+        title_name="", balance=res['balance'], symbol=res['symbol'],
+        time=timeString, spendcoin="", getcoin="")
+
 
 # end of app.py
