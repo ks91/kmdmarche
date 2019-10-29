@@ -1,0 +1,36 @@
+{% extends "kmdmarche/layout.html" %}
+{% block content %}
+<head>
+  <link rel="stylesheet" href="/kmdmarche/static/css/style.css">
+</head>
+    <center><font face="Comic Sans MS"><h1>Welcome to Cocotano!</h1>
+    <h1>KMD FORUM 2019</h1>
+
+
+
+
+    <!-- ここに、ログインで入力したPOSTを受け取るコードが必要です。。。
+        /pay　に飛ばしたいです。-->
+
+
+
+    <h1>>>>>><br>Hi how are you? </h1>
+    <h1><p>{{  name }}!</p>>>>>></h1></font></center>
+<center><button type="button" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　name="qr" onclick="location.href='/kmdmarche/pay'" value="bbb">
+<font size="3" face="Comic Sans MS">Sell</font>
+</button></center>
+<p>
+<p>
+<center><button type="button" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　name="openashop" onclick="location.href='/kmdmarche/shopowner'" value="ddd">
+<font size="3" face="Comic Sans MS">Open a shop?</font>
+</button></center>
+<p>
+<center><button type="button" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　name="TX" onclick="location.href='/kmdmarche/tx'" value="eee">
+<font size="3" face="Comic Sans MS">Transaction</font>
+</button></center>
+<p>
+<center><button type="button" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　name="shops" onclick="location.href='/kmdmarche/ownerlist'" value="fff">
+<font size="3" face="Comic Sans MS">Shop List</font>
+</button></center>
+
+{% endblock %}
