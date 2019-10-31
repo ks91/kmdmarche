@@ -2,24 +2,24 @@
 {% block content %}
     <center><font face="Comic Sans MS"><h1>{{menu_name}}</h1>
     <p>{{ info }}</p>
-            <form action="#" method="post">
+            <form action="/kmdmarche/shopowner" method="post">
               <h1>>>>>></h1>
               <h2>What do you want to sell?</h2>
               <p></p>
                 <h3><input type="text" name="a" list="item" placeholder="select or input" autocomplete="off">
                 <datalist id="item">
-                    <option value="コーヒー">
-              　    <option value="おりがみ">
-              　    <option value="ギター">
-                    <option value="体験談">
+                    <option value="Coffee">
+              　    <option value="Origami">
+              　    <option value="Guitar">
+                    <option value="Tell Your Story">
                 </datalist></h3>
+            <h2><p>Open Time: {{ time }}</p></h2>
+            <h1>>>>>></h1>
+            <input type="submit" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　 value="Open">
             </form>
         <div>
-          <h2><p>Open Time: {{ time }}</p></h2>
-          <h1>>>>>></h1>
         </div>
-        <input type="submit" onclick="location.href='/shopowener_later'" style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px"　 value="Open">
 <h1>>>>>></h1>
-<button type="button" onclick="location.href='/top'" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back"  value="sss">Back to Menu</button></font></center>
+<button type="button" onclick="location.href='/kmdmarche/'" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back"  value="sss">Back to Menu</button></font></center>
 
 {% endblock %}

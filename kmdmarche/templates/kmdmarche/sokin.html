@@ -7,7 +7,8 @@ Your balance is {{balance}} {{symbol}}
 </p>
 <center><font face="Comic Sans MS">
 {% if sending %}
-<h1>Transfer to {{to_name}} ?</h1>
+<h1>Transfer to {{to_name}}</h1>
+<h1>for {{item}} ?</h1>
       <h1>>>>>></h1>
     <form action="/kmdmarche/sokin" method="post">
       <h1>Transfer Amount?</h1>
@@ -21,6 +22,7 @@ Your balance is {{balance}} {{symbol}}
             <option value="6">
         </datalist></h2>
        <input type="hidden" id="to_name" name="to_name" value="{{to_name}}">
+       <input type="hidden" id="item" name="item" value="{{item}}">
        <input type="submit"  style="color:#000000;background-color:#eeb417;font-size:30;width:440px;height:50px" value="Transfer">
     </form>
 {% endif %}

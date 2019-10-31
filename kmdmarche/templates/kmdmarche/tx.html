@@ -21,62 +21,27 @@
         <th bgcolor="#eeb417"><font face="Comic Sans MS">Time</font></th>
         <th bgcolor="#eeb417"><font face="Comic Sans MS">Seller</font></th>
         </tr>
-        <tr align="center">
-        <td>のぞむ</td>
-        <td>コーヒー</td>
-        <td>{{time}}</td>
-        <td>ひろ子</td>
-        </tr>
-        <tr align="center">
-        <td>たかし</td>
-        <td>ピアノ演奏</td>
-        <td>{{time}}</td>
-        <td>ようこ</td>
-        </tr>
-        <tr align="center">
-        <td>かなこ</td>
-        <td>タロット占い</td>
-        <td>{{time}}</td>
-        <td>６</td>
-        </tr>
-        <tr align="center">
-          <td>のぞむ</td>
-          <td>コーヒー</td>
-          <td>{{time}}</td>
-          <td>ひろ子</td>
-        </tr>
-        <tr align="center">
-          <td>たかし</td>
-          <td>ピアノ演奏</td>
-          <td>{{time}}</td>
-          <td>ようこ</td>
-        </tr>
-        <tr align="center">
-          <td>たかし</td>
-          <td>ピアノ演奏</td>
-          <td>{{time}}</td>
-          <td>ようこ</td>
-        </tr>
-        <tr align="center">
-          <td>のぞむ</td>
-          <td>コーヒー</td>
-          <td>{{time}}</td>
-          <td>ひろ子</td>
-        </tr>
-        <tr align="center">
-          <td>たかし</td>
-          <td>ピアノ演奏</td>
-          <td>{{time}}</td>
-          <td>ようこ</td>
-        </tr>
-        <tr align="center">
-          <td>かなこ</td>
-          <td>タロット占い</td>
-          <td>{{time}}</td>
-          <td>６</td>
-        </tr>
-        </table>
-
+      {% for tx in transactions %}
+      <tr>
+      <td>{{tx['from_name']}}</td>
+      <td>{{tx['label']}}</td>
+      <td>{{tx['timestamp']}}</td>
+      <td>{{tx['to_name']}}</td>
+      </tr>
+      {% endfor %}
+      </table>
+      <ul class="listnav">
+      {% if count_before > 0 %}
+      <li><a href="/kmdmarche/tx?offset={{0 if count_before < count else count_before - count}}">&laquo; PREV</a></li>
+      {% else %}
+      <li><span style="color: #808080;">&laquo; PREV</span></li>
+      {% endif %}
+      {% if count_after > 0 %}
+      <li><a href="/kmdmarche/tx?offset={{count_before + count}}">NEXT &raquo;</a></li>
+      {% else %}
+      <li><span style="color: #808080;">NEXT &raquo;</span></li>
+      {% endif %}
+      </ul>
 
     <center>
         <font face="Comic Sans MS">

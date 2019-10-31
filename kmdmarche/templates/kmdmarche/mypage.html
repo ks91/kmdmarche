@@ -3,8 +3,8 @@
     <center><font face="Comic Sans MS"><h1>{{menu_name}}</h1>
     <h1>>>>>></h1>
     <h2>Your balance : {{ balance }} {{symbol}}</h2>
-    <h2>Money you paid {{ spendcoin }}</h2>
-    <h2>Money you received {{ getcoin }}</h2>
+    <h2>Money you paid : {{ spendcoin }} {{symbol}}</h2>
+    <h2>Money you received : {{ getcoin }} {{symbol}}</h2>
     <h1>>>>>></h1>
     </font>
 
@@ -16,70 +16,20 @@
       <th bgcolor="#eeb417"><font face="Comic Sans MS">Money</font></th>
       <th bgcolor="#eeb417"><font face="Comic Sans MS">Seller</font></th>
       </tr>
-      <tr align="center">
-      <td>のぞむ</td>
-      <td>{{time}}</td>
-      <td>コーヒー</td>
-      <td>２</td>
-      <td>ひろ子</td>
+      {% for tx in transactions %}
+      {% if tx['to_name'] == name %}
+      <tr style="color: #ff8080">
+      {% else %}
+      <tr>
+      {% endif %}
+      <td>{{tx['from_name']}}</td>
+      <td>{{tx['timestamp']}}</td>
+      <td>{{tx['label']}}</td>
+      <td align="right">{{tx['amount']}} {{symbol}}</td>
+      <td>{{tx['to_name']}}</td>
       </tr>
-      <tr align="center">
-      <td>のぞむ</td>
-      <td>{{time}}</td>
-      <td>ピアノ演奏</td>
-      <td>４</td>
-      <td>ようこ</td>
-      </tr>
-      <tr align="center">
-      <td>のぞむ</td>
-      <td>{{time}}</td>
-      <td>タロット占い</td>
-      <td>５</td>
-      <td>６</td>
-      </tr>
-      <tr align="center">
-        <td>のぞむ</td>
-        <td>{{time}}</td>
-        <td>コーヒー</td>
-        <td>19</td>
-        <td>ひろ子</td>
-      </tr>
-      <tr align="center">
-        <td>のぞむ</td>
-        <td>{{time}}</td>
-        <td>ピアノ演奏</td>
-        <td>1</td>
-        <td>ようこ</td>
-      </tr>
-      <tr align="center">
-        <td>のぞむ</td>
-        <td>{{time}}</td>
-        <td>ピアノ演奏</td>
-        <td>11</td>
-        <td>ようこ</td>
-      </tr>
-      <tr align="center">
-        <td bgcolor="RED">ひろ子</td>
-        <td>{{time}}</td>
-        <td>コーヒー</td>
-        <td bgcolor="RED">9</td>
-        <td>のぞむ</td>
-      </tr>
-      <tr align="center">
-        <td>のぞむ</td>
-        <td>{{time}}</td>
-        <td>ピアノ演奏</td>
-        <td>1</td>
-        <td>ようこ</td>
-      </tr>
-      <tr align="center">
-        <td>のぞむ</td>
-        <td>{{time}}</td>
-        <td>タロット占い</td>
-        <td>9</td>
-        <td>６</td>
-      </tr>
-      </table>
+      {% endfor %}
+    </table>
 
 
       <font face="Comic Sans MS">
