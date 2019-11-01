@@ -1,12 +1,12 @@
 import base64
 import bbc1
-import datetime
 import qrcode  as qr
 import requests
 import time
 
 from bbc1.core import bbclib
 from bbc1.lib.app_support_lib import Database
+from datetime import datetime, timedelta, timezone
 from flask import Blueprint, render_template, request, session, redirect
 from flask import g, url_for
 from io import BytesIO
@@ -20,8 +20,9 @@ MINT_ID = 'e6500c9aefa1dddb4295dcfa102e574497dfa83baefa117b9f34f654606f876f'
 # Put the initial amount when signed up
 INIT_AMOUNT = '30'
 
-# Put API host name here.
+# Put API host name here, plus prefix for URL encoded in QR code.
 PREFIX_API = 'http://127.0.0.1:5000'
+PREFIX_QR  = 'http://127.0.0.1:5000'
 
 # Put base time (to count transactions) in Unix time here.
 BASE_TIME = 0
@@ -44,6 +45,7 @@ IDX_NAME      = 1
 IDX_ITEM      = 2
 
 
+JST = timezone(timedelta(hours=+9), 'JST')
 domain_id = bbclib.get_new_id("payment_test_domain", include_timestamp=False)
 
 
@@ -156,7 +158,7 @@ def qrmaker(s):
 
 def reform_list(txs):
     for tx in txs:
-        t = datetime.datetime.fromtimestamp(tx['timestamp'])
+        t = datetime.fromtimestamp(tx['timestamp'], JST)
         tx['timestamp'] = t.strftime("%H:%M")
         if len(tx['from_name']) <= 0:
             tx['from_name'] = 'Cocotano'
@@ -164,7 +166,7 @@ def reform_list(txs):
 
 
 def render_top():
-    timeString = datetime.datetime.now().strftime('%H:%M')
+    timeString = datetime.now(JST).strftime('%H:%M')
     return render_template('kmdmarche/register.html', time=timeString)
 
 
@@ -249,7 +251,7 @@ def pay():
 
     name = session['name']
 
-    s_url = PREFIX_API + '/kmdmarche/sokin?to_name=' + name
+    s_url = PREFIX_QR + '/kmdmarche/sokin?to_name=' + name
     qr_b64data = qrmaker(s_url)
     return render_template('kmdmarche/pay2.html',
         qr_b64data=qr_b64data,
@@ -321,7 +323,7 @@ def shopowner():
 
     menu_name = "Register a shop!"
     info = ""
-    now = datetime.datetime.now()
+    now = datetime.now(JST)
     timeString = now.strftime("%H:%M")
     return render_template("kmdmarche/shopowner.html", menu_name = menu_name,
             info = info, time=timeString)
@@ -356,7 +358,7 @@ def tx():
 
     menu_name = "Transactions"
     info = "Your transactions can be seen at 'My Page'"
-    now = datetime.datetime.now()
+    now = datetime.now(JST)
     timeString = now.strftime("%H:%M")
 
     offset = request.args.get('offset')
@@ -389,7 +391,7 @@ def ownerlist():
 
     menu_name = "Recommended Shop"
     info = "Newest Ones First"
-    now = datetime.datetime.now()
+    now = datetime.now(JST)
     timeString = now.strftime("%H:%M")
 
     store = Store()
@@ -398,7 +400,7 @@ def ownerlist():
     store.close()
 
     for shop in shops:
-        t = datetime.datetime.fromtimestamp(shop['timestamp'])
+        t = datetime.fromtimestamp(shop['timestamp'], JST)
         shop['timestamp'] = t.strftime("%H:%M")
 
     return render_template("kmdmarche/ownerlist.html", menu_name=menu_name,
@@ -442,7 +444,7 @@ def mypage():
             spendcoin += int(tx['amount'])
 
     menu_name = "My Page"
-    now = datetime.datetime.now()
+    now = datetime.now(JST)
     timeString = now.strftime("%H:%M")
     return render_template("kmdmarche/mypage.html", menu_name=menu_name,
         name=name, balance=balance, symbol=symbol,
