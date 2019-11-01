@@ -1,16 +1,17 @@
 {% extends "kmdmarche/layout.html" %}
 {% block content %}
-    <center><font face="Comic Sans MS"><h1>{{menu_name}}</h1>
-    <p>{{ info }}</p></font></center>
-    <!-- <p><a href="/mypage">マイページはこちら！</a></p> -->
-
-
-        <br>
-            <!-- <h2>{{data}}</h2> -->
-            <center><font face="Comic Sans MS"><h2>Please show your QRcode to customer</h2>
-            <h1>>>>>></h1></font>
-            <img src="{{qr_b64data}}" alt="{{qr_name}}" >
-          <font face="Comic Sans MS">
-            <h1>>>>>></h1>
-    <button type="button" style="color:#000000;background-color:#d8bfd8;font-size:30;width:220px;height:50px"　name="back" onclick="location.href='/kmdmarche/'" value="sss">Back to Menu</button></font></center>
+<center>
+<h1>Cocotano Marché</h1>
+</center>
+<!-- <p><a href="/mypage">マイページはこちら！</a></p> -->
+<br/>
+<!-- <h2>{{data}}</h2> -->
+<center><h2>Please show your QRcode to customer</h2>
+<h1>>>>>></h1>
+<img src="{{qr_b64data}}" alt="{{qr_name}}" width="100%">
+<h1>>>>>></h1>
+<button type="button" class="backbutton"　name="back" onclick="location.href='/kmdmarche/'" value="sss">
+Back to Menu
+</button>
+</center>
 {% endblock %}

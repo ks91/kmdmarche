@@ -1,3 +1,7 @@
+body {
+  font-family: 'Comic Sans MS', 'Marker Felt', sans-serif;
+}
+
 table{
   width: 100%;
   border-collapse: collapse;
@@ -11,6 +15,22 @@ table th,table td{
 
 table tr:nth-child(odd){
   background-color: #eee
+}
+
+button.widebutton {
+  color: #000000;
+  background-color: #eeb417;
+  font-size: 30;
+  width: 80%;
+  height: 50px;
+}
+
+button.backbutton {
+color: #000000;
+background-color: #d8bfd8;
+font-size: 30;
+width: 40%;
+height: 50px
 }
 
 ul.listnav {

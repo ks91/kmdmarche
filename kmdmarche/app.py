@@ -111,7 +111,7 @@ class Store:
         )
 
 
-def get_balance(name, user_id):
+def get_balance(name, user_id, done=False):
     r = requests.get(PREFIX_API + '/api/status/' + user_id,
             params={'mint_id': MINT_ID})
     res = r.json()
@@ -121,14 +121,20 @@ def get_balance(name, user_id):
                 message=res['error']['message'])
 
     to_name = request.args.get('to_name')
+    item = None
 
-    store = Store()
-    store.setup()
-    item = store.get_shop_item(to_name)
-    store.close()
+    if not done:
+        if to_name is None or len(to_name) <= 0:
+            return render_template('kmdmarche/error.html',
+                    message='to_name is missing')
+
+        store = Store()
+        store.setup()
+        item = store.get_shop_item(to_name)
+        store.close()
 
     return render_template('kmdmarche/sokin.html', name=name, user_id=user_id,
-            balance=res['balance'], symbol=res['symbol'],
+            balance=int(res['balance']), symbol=res['symbol'],
             to_name=to_name, item=item, sending=request.method=='GET')
 
 
@@ -157,9 +163,13 @@ def reform_list(txs):
             tx['label'] = '*** JOINED ***'
 
 
+def render_top():
+    timeString = datetime.datetime.now().strftime('%H:%M')
+    return render_template('kmdmarche/register.html', time=timeString)
+
+
 kmdmarche = Blueprint('kmdmarche', __name__, template_folder='templates',
         static_folder='./static')
-title_name="CocoTano Marche"
 
 
 @kmdmarche.route('/')
@@ -169,24 +179,20 @@ def register():
         return render_template('kmdmarche/top.html', name=session['name'])
 
     if request.method == 'GET':
-        now = datetime.datetime.now()
-        timeString = now.strftime('%H:%M')
-
-        return render_template('kmdmarche/register.html',
-                title_name=title_name, time=timeString)
+        return render_top()
 
     name = request.form.get('name')
 
     if name is None or len(name) <= 0:
         return render_template('kmdmarche/error.html',
-                message='name is missing')
+                message='name is missing', back_name='Register')
 
     r = requests.post(PREFIX_API + '/api/user', data={'name': name})
     res = r.json()
 
     if r.status_code != 201:
         return render_template('kmdmarche/error.html',
-                message=res['error']['message'])
+                message=res['error']['message'], back_name='Register')
 
     user_id = res['user_id']
 
@@ -212,14 +218,14 @@ def log_in():
 
     if name is None or len(name) <= 0:
         return render_template('kmdmarche/error.html',
-                message='name is missing')
+                message='name is missing', back_name='Log In')
 
     r = requests.get(PREFIX_API + '/api/user', params={'name': name})
     res = r.json()
 
     if r.status_code != 200:
         return render_template('kmdmarche/error.html',
-                message=res['error']['message'])
+                message=res['error']['message'], back_name='Log In')
 
     session['name'] = name
     session['user_id'] = res['user_id']
@@ -232,56 +238,29 @@ def log_out():
     session.pop('user_id', None)
     session.pop('name', None)
 
-    return render_template('kmdmarche/register.html')
+    return render_top()
 
 
 # payment
 @kmdmarche.route("/pay", methods=['POST','GET'])
 def pay():
     if 'user_id' not in session:
-        now = datetime.datetime.now()
-        timeString = now.strftime('%H:%M')
-
-        return render_template('kmdmarche/register.html',
-                title_name=title_name, time=timeString)
+        return render_top()
 
     name = session['name']
 
-    menu_name = "Cocotano Marche"
-    info = ""
     s_url = PREFIX_API + '/kmdmarche/sokin?to_name=' + name
     qr_b64data = qrmaker(s_url)
-    ts = datetime.datetime.now()
     return render_template('kmdmarche/pay2.html',
         qr_b64data=qr_b64data,
-        qr_name=s_url,
-        menu_name=menu_name,
-        info=info
+        qr_name=s_url
     )
-
-
-# retry and quit
-@kmdmarche.route('/event', methods=['GET'] )
-def event():
-    if request.method == 'GET':
-        if request.args.get('submit') == 'Retry':
-           return redirect(url_for('pay0'))
-        elif request.args.get('submit') == 'Quit':
-            return Response('Please close the web browser')
-        else:
-            pass # unknown
-    elif request.method == 'POST':
-        return redirect(url_for('pay0'))
 
 
 @kmdmarche.route('/sokin', methods=['GET', 'POST'])
 def sokin():
     if 'user_id' not in session:
-        now = datetime.datetime.now()
-        timeString = now.strftime('%H:%M')
-
-        return render_template('kmdmarche/register.html',
-                title_name=title_name, time=timeString)
+        return render_top()
 
     name = session['name']
     user_id = session['user_id']
@@ -292,6 +271,7 @@ def sokin():
     to_name = request.form.get('to_name')
     amount = request.form.get('amount')
     item = request.form.get('item')
+    balance = int(request.form.get('balance'))
 
     if to_name is None or len(to_name) <= 0:
         return render_template('kmdmarche/error.html',
@@ -299,7 +279,16 @@ def sokin():
 
     if amount is None or len(amount) <= 0:
         return render_template('kmdmarche/error.html',
-                message='amount is missing')
+                message='amount is missing', back_name='Transfer')
+
+    x = int(amount) if amount.isdecimal() else 0
+    if x <= 0:
+        return render_template('kmdmarche/error.html',
+                message='amount must be non-zero positive number',
+                back_name='Transfer')
+    if x > balance:
+        return render_template('kmdmarche/error.html',
+                message='not enough fund', back_name='Transfer')
 
     r = requests.get(PREFIX_API + '/api/user', params={'name': to_name})
     res = r.json()
@@ -321,40 +310,27 @@ def sokin():
         return render_template('kmdmarche/error.html',
                 message=res['error']['message'])
 
-    return get_balance(name, user_id)
+    return get_balance(name, user_id, done=True)
 
-
-@kmdmarche.route("/sokin_later")
-def sokin_later():
-
-    return render_template("kmd/marche/sokin_later.html")
 
 # shop registration
 @kmdmarche.route("/shopowner", methods=['GET'])
 def shopowner():
     if 'user_id' not in session:
-        now = datetime.datetime.now()
-        timeString = now.strftime('%H:%M')
-
-        return render_template('kmdmarche/register.html',
-                title_name=title_name, time=timeString)
+        return render_top()
 
     menu_name = "Register a shop!"
     info = ""
     now = datetime.datetime.now()
     timeString = now.strftime("%H:%M")
     return render_template("kmdmarche/shopowner.html", menu_name = menu_name,
-            title_name = title_name, info = info, time=timeString)
+            info = info, time=timeString)
 
 
 @kmdmarche.route("/shopowner", methods=['POST'])
 def shopowner_later():
     if 'user_id' not in session:
-        now = datetime.datetime.now()
-        timeString = now.strftime('%H:%M')
-
-        return render_template('kmdmarche/register.html',
-                title_name=title_name, time=timeString)
+        return render_top()
 
     name = session['name']
 
@@ -362,7 +338,7 @@ def shopowner_later():
 
     if item is None or len(item) <= 0:
         return render_template('kmdmarche/error.html',
-                message='item is missing')
+                message='item is missing', back_name='Open a Shop')
 
     store = Store()
     store.setup()
@@ -375,8 +351,11 @@ def shopowner_later():
 # list of transactions
 @kmdmarche.route("/tx")
 def tx():
+    if 'user_id' not in session:
+        return render_top()
+
     menu_name = "Transactions"
-    info = "Your transaction will be listed bellow"
+    info = "Your transactions can be seen at 'My Page'"
     now = datetime.datetime.now()
     timeString = now.strftime("%H:%M")
 
@@ -394,8 +373,8 @@ def tx():
 
     reform_list(res['transactions'])
 
-    return render_template("kmdmarche/tx.html", menu_name = menu_name,
-            title_name = title_name, info = info, time=timeString,
+    return render_template("kmdmarche/tx.html", menu_name=menu_name,
+            info=info, time=timeString,
             transactions=res['transactions'], count=LIST_COUNT,
             count_before=res['count_before'], count_after=res['count_after'])
 
@@ -404,16 +383,12 @@ def tx():
 @kmdmarche.route("/ownerlist")
 def ownerlist():
     if 'user_id' not in session:
-        now = datetime.datetime.now()
-        timeString = now.strftime('%H:%M')
-
-        return render_template('kmdmarche/register.html',
-                title_name=title_name, time=timeString)
+        return render_top()
 
     name = session['name']
 
-    menu_name = "Recommend Shop"
-    info = "Show in Time Order"
+    menu_name = "Recommended Shop"
+    info = "Newest Ones First"
     now = datetime.datetime.now()
     timeString = now.strftime("%H:%M")
 
@@ -427,18 +402,13 @@ def ownerlist():
         shop['timestamp'] = t.strftime("%H:%M")
 
     return render_template("kmdmarche/ownerlist.html", menu_name=menu_name,
-            title_name=title_name, info=info, time=timeString, name=name,
-            shops=shops)
+            info=info, time=timeString, name=name, shops=shops)
 
 
 @kmdmarche.route('/mypage')
 def mypage():
     if 'user_id' not in session:
-        now = datetime.datetime.now()
-        timeString = now.strftime('%H:%M')
-
-        return render_template('kmdmarche/register.html',
-                title_name=title_name, time=timeString)
+        return render_top()
 
     name = session['name']
     user_id = session['user_id']
@@ -474,8 +444,8 @@ def mypage():
     menu_name = "My Page"
     now = datetime.datetime.now()
     timeString = now.strftime("%H:%M")
-    return render_template("kmdmarche/mypage.html", menu_name="",
-        title_name="", name=name, balance=balance, symbol=symbol,
+    return render_template("kmdmarche/mypage.html", menu_name=menu_name,
+        name=name, balance=balance, symbol=symbol,
         time=timeString, spendcoin=spendcoin, getcoin=getcoin,
         transactions=res['transactions'])
 
